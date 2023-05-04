@@ -62,3 +62,42 @@ def calendar_test(request):
     event = service.events().insert(calendarId='primary', body=event).execute()
 
     return Response("Success")
+
+
+# Create new User and UserProfile
+@api_view(["POST"])
+def signup(request):
+    pass
+
+
+# check with User table to see if user can be authenticated
+@api_view(["POST"])
+def signin(request):
+    pass
+
+
+# update UserProfile fields based on new data
+@api_view(["UPDATE"])
+def update_settings(request):
+    pass
+
+
+"""
+    This one will be a big one:
+        - First get the events from the user, store em in Task table
+        - Then run the google script to authenticate user for API
+        - Then retrieve all their events in their calendar for the next week
+        - Then run algorithm (new tasks are in Task table, existing events are fetched from API^)
+        - The algorithm should then populate the start and end fields for each task in db
+        - Then, return Schedule, which is an object containing all the tasks and their fields
+"""
+@api_view(["POST"])
+def schedule(request):
+    pass
+
+
+
+#This route gets the confirmed Schedule object back, and calls the API to POST the final events
+@api_view(["POST"])
+def post_tasks(request):
+    pass

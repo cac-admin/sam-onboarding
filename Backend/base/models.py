@@ -9,8 +9,10 @@ class UserProfile(models.Model):
     # should include username, uid, and pw
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True) 
     # Might need gc_auth
-    preferred_start = models.DateTimeField()
-    preferred_end = models.DateTimeField()
+
+    # will both be blank until user updates settings
+    preferred_start = models.DateTimeField(null=True)
+    preferred_end = models.DateTimeField(null=True)
 
 
 class Task(models.Model):
@@ -19,5 +21,5 @@ class Task(models.Model):
     length = models.IntegerField(max_length=24) # in hours
 
     # these are allowed to be blank (until algorithm runs)
-    start = models.DateTimeField(blank=True) 
-    end = models.DateTimeField(blank=True)
+    start = models.DateTimeField(null=True) 
+    end = models.DateTimeField(null=True)

@@ -26,11 +26,11 @@
 https://github.com/SamEThibault/calendar-helper/blob/main/app/calendarAPI.py
 
 # To Do:
-- Test Google Calendar API
-- Write scheduling algorithm
+- Test Google Calendar API (Retrieving events for the week)
+	- Also test to see if current app can access other account calendars 
+- Write scheduling algorithm (Using the API)
 - Design UI
-- Design endpoints
-- Write Schema (from Figma)
+- Complete endpoints design
 - Test Auth
 - Fetch from Next
 - System Test
