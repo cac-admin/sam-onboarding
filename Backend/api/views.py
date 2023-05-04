@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from base.models import Item
 from .serializers import ItemSerializer
-from .Google import Create_Service
+from .google import Create_Service
 
 import os
 
@@ -28,6 +28,16 @@ def addItem(request):
 
 @api_view(["POST"])
 def calendar_test(request):
+
+    """
+    Example request body (JSON):
+    {
+        "name":"calendar Test",
+        "startDateTime":"2023-05-04T09:00:00-07:00",
+        "endDateTime":"2023-05-04T09:00:00-07:00"
+    }
+    """
+
     event = request.data
     print(os.getcwd())
     CLIENT_SECRET_FILE = "api/credentials.json"
