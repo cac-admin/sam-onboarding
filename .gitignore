@@ -1,4 +1,7 @@
 # Django #
+
+Backend/credentials.json
+
 *.log
 *.pot
 *.pyc
