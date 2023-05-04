@@ -1,6 +1,6 @@
 # Django #
 
-Backend/credentials.json
+Backend/api/credentials.json
 
 *.log
 *.pot
