@@ -55,7 +55,7 @@ def find_schedule(username, events):
     - Cannot skip the events, you can skip the tasks if it's impossible to add them in
     - Algorithm: always select the next possible task that ends as early as possible, without comprimising the calendar events
     """
-    now = datetime.datetime.utcnow().day
+    now = datetime.datetime.utcnow()
     event_datetimes = []
     for event in events:
         start = event["start"].get("dateTime", event["start"].get("date"))
@@ -73,7 +73,7 @@ def find_schedule(username, events):
         )
 
     # Go one day at a time: 7 days total
-    for day in range(1 + now, 8 + now):
+    for day in range(1 + now.day, 8 + now.day):
         print("day: ", day)
         i = 0
         day_events = []
@@ -113,13 +113,13 @@ def find_schedule(username, events):
                             )
                             print(task.start)
                             task.end = datetime.datetime(
-                                now.year, now.month, day, task.start + task.length
+                                now.year, now.month, day, task.start.hour + task.length
                             )
                             print(task.end)
                             task.save()
                             break
                     slot_size = 0
-                    curr_time = day_events[i]["end"]
+                    curr_time = day_events[i][1]["end"]
                     i += 1
         else:
             # we have all day, squeeze as many tasks as you can in this day between preferred_start and preferred_end
@@ -135,7 +135,7 @@ def find_schedule(username, events):
                         )
                         print(task.start)
                         task.end = datetime.datetime(
-                            now.year, now.month, day, task.start + task.length
+                            now.year, now.month, day, task.start.hour + task.length
                         )
                         print(task.end)
                         task.save()
