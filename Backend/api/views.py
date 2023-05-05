@@ -1,10 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
 # from base.models import Item
 # from .serializers import ItemSerializer
 from .google import Create_Service
-
-import os
+from .util import store_tasks
+import os, datetime
 
 
 # @api_view(["GET"])
@@ -26,9 +27,9 @@ import os
 #     # return the data that was posted to the db
 #     return Response(serializer.data)
 
+
 @api_view(["POST"])
 def calendar_test(request):
-
     """
     Example request body (JSON):
     {
@@ -46,20 +47,20 @@ def calendar_test(request):
     SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
     service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-    
+
     event = {
-        'summary': event['name'],
-        'start': {
-            'dateTime': event['startDateTime'],
-            'timeZone': 'America/New_York',
+        "summary": event["name"],
+        "start": {
+            "dateTime": event["startDateTime"],
+            "timeZone": "America/New_York",
         },
-        'end': {
-            'dateTime': event['endDateTime'],
-            'timeZone': 'America/New_York',
+        "end": {
+            "dateTime": event["endDateTime"],
+            "timeZone": "America/New_York",
         },
     }
 
-    event = service.events().insert(calendarId='primary', body=event).execute()
+    event = service.events().insert(calendarId="primary", body=event).execute()
 
     return Response("Success")
 
@@ -93,11 +94,68 @@ def update_settings(request):
 """
 @api_view(["POST"])
 def schedule(request):
-    pass
+    """
+    Format of request body:
+    {
+        "tasks": [
+            {
+                "user":
+                "name":
+                "length":
+                "start": NULL
+                "end": NULL
+            },
+            {...},
+            {...}
+        ]
+    }
+    """
+
+    tasks = request.data["tasks"]
+    
+    # UNCOMMENT THIS AFTER TESTING
+    # Store user tasks in task table
+    # if not store_tasks(tasks):
+    #     return Response("Failed")
+    
+    CLIENT_SECRET_FILE = "api/credentials.json"
+    API_NAME = "calendar"
+    API_VERSION = "v3"
+    SCOPES = ["https://www.googleapis.com/auth/calendar"]
+
+    service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+    print('Getting the upcoming 25 events')
+    now = datetime.datetime.utcnow().isoformat() + 'Z'
+    now_dt = datetime.datetime.utcnow()
+    print(now_dt)
+    events_result = service.events().list(calendarId='primary', timeMin=now,
+                                              maxResults=25, singleEvents=True,
+                                              orderBy='startTime').execute()
+    events = events_result.get('items', [])
+
+    if not events:
+        print('No upcoming events found.')
+        return
+
+    # Prints the start and name of next week's events
+    valid_events = []
+    for event in events:
+        start = event['start'].get('dateTime', event['start'].get('date'))
+
+        # Format or start: 2023-05-05T08:00:00-04:00
+        # Convert to datetime for comparison
+        start_dt = datetime.datetime.strptime(start.split("T")[0], "%Y-%m-%d")
+
+        # If it's in the next 7 days, save it
+        if start_dt < now_dt.replace(day=now_dt.day+7):
+            print(start, event['summary'])
+            valid_events.append(event)
+
+    
+    return Response("Success")
 
 
-
-#This route gets the confirmed Schedule object back, and calls the API to POST the final events
+# This route gets the confirmed Schedule object back, and calls the API to POST the final events
 @api_view(["POST"])
 def post_tasks(request):
     pass

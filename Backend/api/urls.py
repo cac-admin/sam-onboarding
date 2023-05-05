@@ -5,4 +5,5 @@ urlpatterns = [
     #path("", views.getData),
     #path("add/", views.addItem),
     path("event/", views.calendar_test),
+    path("schedule/", views.schedule)
 ]
