@@ -108,8 +108,14 @@ def find_schedule(username, events):
                 else:
                     for task in tasks:
                         if task.length <= slot_size:
-                            task.start = curr_time - slot_size
-                            task.end = task.start + task.length
+                            task.start = datetime.datetime(
+                                now.year, now.month, day, curr_time - slot_size
+                            )
+                            print(task.start)
+                            task.end = datetime.datetime(
+                                now.year, now.month, day, task.start + task.length
+                            )
+                            print(task.end)
                             task.save()
                             break
                     slot_size = 0
@@ -124,8 +130,14 @@ def find_schedule(username, events):
                 task_len = 0
                 for task in tasks:
                     if task.length <= slot_size:
-                        task.start = curr_time - slot_size
-                        task.end = task.start + task.length
+                        task.start = datetime.datetime(
+                            now.year, now.month, day, curr_time - slot_size
+                        )
+                        print(task.start)
+                        task.end = datetime.datetime(
+                            now.year, now.month, day, task.start + task.length
+                        )
+                        print(task.end)
                         task.save()
                         task_len = task.length
                         break
@@ -133,16 +145,16 @@ def find_schedule(username, events):
                     curr_time += task_len
                 else:
                     curr_time += 1
-        
+
     final_tasks = Task.objects.filter(user=user)
-    schedule = {"tasks":[]}
+    schedule = {"tasks": []}
     for task in final_tasks:
         schedule["tasks"].append(
             {
-                "name":task.name,
-                "length":task.length,
-                "start":task.start,
-                "end":task.end
+                "name": task.name,
+                "length": task.length,
+                "start": task.start,
+                "end": task.end,
             }
         )
     return schedule
