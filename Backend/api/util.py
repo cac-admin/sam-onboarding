@@ -34,11 +34,5 @@ def find_schedule(username, events):
     profile = UserProfile.objects.get(user=user)
     preferred_start = profile.preferred_start
     preferred_end = profile.preferred_end
-
-    if preferred_end == None and preferred_start == None:
-        # then we have no preference
-        pass
-    else:
-        pass
-        # ensure you stay within time window
+    
     

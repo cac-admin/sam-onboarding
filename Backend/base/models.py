@@ -7,8 +7,8 @@ class UserProfile(models.Model):
     # Might need gc_auth
 
     # will both be blank until user updates settings
-    preferred_start = models.DateTimeField(null=True)
-    preferred_end = models.DateTimeField(null=True)
+    preferred_start = models.IntegerField(null=True)
+    preferred_end = models.IntegerField(null=True)
 
 
 class Task(models.Model):
