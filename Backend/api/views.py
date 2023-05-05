@@ -122,7 +122,6 @@ def schedule(request):
         "user": "username",
         "tasks": [
             {
-                "user":
                 "name":
                 "length":
                 "start": NULL
@@ -151,7 +150,7 @@ def schedule(request):
     print("Getting the upcoming 25 events")
     now = datetime.datetime.utcnow().isoformat() + "Z"
     now_dt = datetime.datetime.utcnow()
-    print(now_dt)
+    # print(now_dt)
     events_result = (
         service.events()
         .list(
@@ -179,13 +178,12 @@ def schedule(request):
 
             # If it's in the next 7 days, save it
             if start_dt < now_dt.replace(day=now_dt.day + 7):
-                print(start, event["summary"])
+                # print(start, event["summary"])
                 valid_events.append(event)
 
-    return Response("Success")
     # schedule = find_schedule(data["user"], valid_events)
-
-    # return Response(schedule)
+    schedule = find_schedule(data["user"], valid_events)
+    return Response(schedule)
 
 
 # This route gets the confirmed Schedule object back, and calls the API to POST the final events
