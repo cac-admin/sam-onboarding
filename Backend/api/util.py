@@ -74,6 +74,7 @@ def find_schedule(username, events):
         )
 
     # Go one day at a time: 7 days total
+    used = [0] * len(tasks)
     for day in range(1 + now.day, 8 + now.day):
         # print("day: ", day)
         i = 0
@@ -102,23 +103,30 @@ def find_schedule(username, events):
             slot_size = 0
             i = 0
             curr_time = preferred_start
+            
             while i < len(day_events) and curr_time < preferred_end:
                 if day_events[i][1]["start"] > curr_time:
                     slot_size += 1
                     curr_time += 1
                 else:
+                    j = 0
                     for task in tasks:
-                        if task.length <= slot_size:
+                        if task.length <= slot_size and used[j] == 0:
+                            print(task.name + ": ")
                             task.start = make_aware(datetime.datetime(
                                 now.year, now.month, day, curr_time - slot_size
                             ))
-                            # print(task.start)
+                            print(task.start)
                             task.end = make_aware(datetime.datetime(
                                 now.year, now.month, day, task.start.hour + task.length
                             ))
-                            # print(task.end)
+                            print(task.end)
                             task.save()
+                            used[j] = 1
+                            j += 1
                             break
+                        j += 1
+
                     slot_size = 0
                     curr_time = day_events[i][1]["end"]
                     i += 1
@@ -129,12 +137,15 @@ def find_schedule(username, events):
 
             while curr_time < preferred_end:
                 task_len = 0
-                print(curr_time)
+                # print(curr_time)
+                j = 0
+                temp = 0
                 for task in tasks:
-                    if task.length <= slot_size:
+                    if task.length <= slot_size and used[j] == 0:
                         task.start = make_aware(datetime.datetime(
                             now.year, now.month, day, curr_time - slot_size
                         ))
+                        print(task.name + ": ")
                         print(task.start)
                         task.end = make_aware(datetime.datetime(
                             now.year, now.month, day, task.start.hour + task.length
@@ -142,9 +153,13 @@ def find_schedule(username, events):
                         print(task.end)
                         task.save()
                         task_len = task.length
+                        temp = task.end.hour
+                        used[j] = 1
+                        j += 1
                         break
+                    j += 1
                 if task_len > 0:
-                    curr_time += 1
+                    curr_time = temp
                     slot_size = 0
                 else:
                     curr_time += 1
