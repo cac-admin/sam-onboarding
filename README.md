@@ -26,8 +26,8 @@
 https://github.com/SamEThibault/calendar-helper/blob/main/app/calendarAPI.py
 
 # To Do:
+- Figure out why algorithm only works for first few days in advance
 - test GC API to see if current app can access other account calendars 
-- Write scheduling algorithm (create_schedule() in util)
 - Design UI
 - Complete endpoints design: UserProfile Updates, Schedule confirmation
 - Fetch from Next
