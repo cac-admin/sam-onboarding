@@ -74,6 +74,7 @@ def schedule(request):
     """
     Format of request body:
     {
+        "user": "username",
         "tasks": [
             {
                 "user":
@@ -88,11 +89,11 @@ def schedule(request):
     }
     """
 
-    tasks = request.data["tasks"]
+    data = request.data
     
     # UNCOMMENT THIS AFTER TESTING
     # Store user tasks in task table
-    # if not store_tasks(tasks):
+    # if not store_tasks(data):
     #     return Response("Failed")
     
     # get event data for the next week
@@ -128,9 +129,10 @@ def schedule(request):
                 print(start, event['summary'])
                 valid_events.append(event)
   
-    find_schedule(tasks[0]["user"], valid_events)
-
     return Response("Success")
+    # schedule = find_schedule(data["user"], valid_events)
+
+    # return Response(schedule)
 
 
 # This route gets the confirmed Schedule object back, and calls the API to POST the final events
