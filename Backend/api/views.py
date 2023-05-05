@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 # from base.models import Item
 # from .serializers import ItemSerializer
 from .google import Create_Service
-from .util import store_tasks
+from .util import store_tasks, find_schedule
 import os, datetime
 
 
@@ -118,6 +118,7 @@ def schedule(request):
     # if not store_tasks(tasks):
     #     return Response("Failed")
     
+    # get event data for the next week
     CLIENT_SECRET_FILE = "api/credentials.json"
     API_NAME = "calendar"
     API_VERSION = "v3"
@@ -133,25 +134,25 @@ def schedule(request):
                                               orderBy='startTime').execute()
     events = events_result.get('items', [])
 
-    if not events:
-        print('No upcoming events found.')
-        return
-
     # Prints the start and name of next week's events
     valid_events = []
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
+    if not events:
+        print('No upcoming events found.')
+    else:
+        for event in events:
+            start = event['start'].get('dateTime', event['start'].get('date'))
 
-        # Format or start: 2023-05-05T08:00:00-04:00
-        # Convert to datetime for comparison
-        start_dt = datetime.datetime.strptime(start.split("T")[0], "%Y-%m-%d")
+            # Format or start: 2023-05-05T08:00:00-04:00
+            # Convert to datetime for comparison
+            start_dt = datetime.datetime.strptime(start.split("T")[0], "%Y-%m-%d")
 
-        # If it's in the next 7 days, save it
-        if start_dt < now_dt.replace(day=now_dt.day+7):
-            print(start, event['summary'])
-            valid_events.append(event)
+            # If it's in the next 7 days, save it
+            if start_dt < now_dt.replace(day=now_dt.day+7):
+                print(start, event['summary'])
+                valid_events.append(event)
+  
+    find_schedule(tasks[0]["user"], valid_events)
 
-    
     return Response("Success")
 
 

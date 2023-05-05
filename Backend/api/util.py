@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.db import models
 from base.models import Task
 
 # store a task in the db + validate
@@ -20,3 +19,16 @@ def store_tasks(tasks):
         Task.objects.create(user=task["user"], name=task["name"], length=task["length"],
                             start=None, end=None)
     return True
+
+
+"""
+    algorithm to find optimal task schedule
+    parameters:
+        - username: str, name of the user so we can query db for the tasks they want to do
+        - events: list[] of events that the user already has in their calendar for the next week
+"""
+def find_schedule(username, events):
+    # start by getting the tasks from the db
+    tasks = Task.objects.filter(user=User.objects.get(username=username))
+    
+    
