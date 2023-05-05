@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from base.models import Task, UserProfile
+from django.utils.timezone import make_aware
 import datetime
 
 
@@ -74,12 +75,12 @@ def find_schedule(username, events):
 
     # Go one day at a time: 7 days total
     for day in range(1 + now.day, 8 + now.day):
-        print("day: ", day)
+        # print("day: ", day)
         i = 0
         day_events = []
         for event in event_datetimes:
             if day == event["day"]:
-                print("Event detected: ", events[i]["summary"])
+                # print("Event detected: ", events[i]["summary"])
 
                 """
                 here we're collecting the events that are happening on that day, and we're keeping track of their start and end dates:
@@ -108,14 +109,14 @@ def find_schedule(username, events):
                 else:
                     for task in tasks:
                         if task.length <= slot_size:
-                            task.start = datetime.datetime(
+                            task.start = make_aware(datetime.datetime(
                                 now.year, now.month, day, curr_time - slot_size
-                            )
-                            print(task.start)
-                            task.end = datetime.datetime(
+                            ))
+                            # print(task.start)
+                            task.end = make_aware(datetime.datetime(
                                 now.year, now.month, day, task.start.hour + task.length
-                            )
-                            print(task.end)
+                            ))
+                            # print(task.end)
                             task.save()
                             break
                     slot_size = 0
@@ -124,27 +125,30 @@ def find_schedule(username, events):
         else:
             # we have all day, squeeze as many tasks as you can in this day between preferred_start and preferred_end
             curr_time = preferred_start
-            while curr_time < preferred_end:
-                slot_size = curr_time - preferred_start
+            slot_size = 0
 
+            while curr_time < preferred_end:
                 task_len = 0
+                print(curr_time)
                 for task in tasks:
                     if task.length <= slot_size:
-                        task.start = datetime.datetime(
+                        task.start = make_aware(datetime.datetime(
                             now.year, now.month, day, curr_time - slot_size
-                        )
+                        ))
                         print(task.start)
-                        task.end = datetime.datetime(
+                        task.end = make_aware(datetime.datetime(
                             now.year, now.month, day, task.start.hour + task.length
-                        )
+                        ))
                         print(task.end)
                         task.save()
                         task_len = task.length
                         break
                 if task_len > 0:
-                    curr_time += task_len
+                    curr_time += 1
+                    slot_size = 0
                 else:
                     curr_time += 1
+                    slot_size += 1
 
     final_tasks = Task.objects.filter(user=user)
     schedule = {"tasks": []}
@@ -157,4 +161,5 @@ def find_schedule(username, events):
                 "end": task.end,
             }
         )
+    
     return schedule
