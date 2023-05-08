@@ -6,13 +6,16 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import styles from '../styles/Headings.module.css';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function Signup() 
 {
+    const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [preferred_start, setStart] = useState(0);
     const [preferred_end, setEnd] = useState(0);
+    const [resMsg, setResMsg] = useState('');
 
     function handleUsernameChange(event)
     {
@@ -37,7 +40,6 @@ export default function Signup()
     const handleCall = async() => {
         try {
             const body = JSON.stringify({username, password, preferred_start, preferred_end})
-            console.log(body)
 
             const res = await fetch("http://localhost:8000/register/", {
                 method: 'POST',
@@ -46,9 +48,17 @@ export default function Signup()
                 },
                 body: body
             });
-            const data = await response.json();
-            setResponse(data);
-            // Do the logic here: wether we redirect to home or nah
+
+            const data = await res.json();
+            
+            if (res.status == 200)
+            {
+                router.push('/login');
+            }
+            else
+            {
+                setResMsg(data);
+            }
         } catch (err) {
             console.error(err);
         }
@@ -88,6 +98,7 @@ export default function Signup()
                     Have an account already?
                 </Link>
             </h3>
+            <h4 className={styles.centered}>{resMsg}</h4>
             
         </Layout>
     );
