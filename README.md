@@ -29,4 +29,5 @@ https://github.com/SamEThibault/calendar-helper/blob/main/app/calendarAPI.py
 - Build UI
 - Fetch from Next
 - System Test: test GC API to see if current app can access other account calendars 
+- Check into backend data serialization
 - Deploy if time permits

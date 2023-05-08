@@ -11,10 +11,7 @@ export default function Home()
       </Head>
       
       <section className={utilStyles.headingMd}>
-        <p>Introduction ....</p>
-        <p>
-          text.............
-        </p>
+        <p></p>
       </section>
     </Layout>
   )
