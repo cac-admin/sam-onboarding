@@ -102,8 +102,6 @@ def schedule(request):
             {
                 "name":
                 "length":
-                "start": NULL
-                "end": NULL
             },
             {...},
             {...}

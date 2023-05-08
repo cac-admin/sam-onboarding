@@ -1,7 +1,12 @@
 .centered {
     text-align: center;
+    
 }
 
 .centerBox {
-    margin-left: 3rem;
+    margin: auto;
+}
+
+.hyperlink {
+    margin-left: 2rem;
 }

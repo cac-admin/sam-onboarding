@@ -53,6 +53,7 @@ export default function Signup()
             
             if (res.status == 200)
             {
+                localStorage.setItem('username', username)
                 router.push('/login');
             }
             else
@@ -94,7 +95,7 @@ export default function Signup()
                 <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleCall}>
                     Sign Up
                 </Button>
-                <Link className={styles.centerBox} href='/login'>
+                <Link className={styles.hyperlink} href='/login'>
                     Have an account already?
                 </Link>
             </h3>

@@ -26,13 +26,13 @@ def store_tasks(data):
     try:
         user = User.objects.get(username=data["user"])
         for task in tasks:
-            if task["length"] > 24:
+            if int(task["length"]) > 24:
                 return False
 
             Task.objects.create(
                 user=user,
                 name=task["name"],
-                length=task["length"],
+                length=int(task["length"]),
                 start=None,
                 end=None,
             )
