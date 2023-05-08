@@ -67,7 +67,7 @@ def update_settings(request):
 
     """
     try:
-        user = User.objects.get(username=data["user"])
+        user = User.objects.get(username=data["username"])
     except:
         return Response("User does not exist", 400)
 

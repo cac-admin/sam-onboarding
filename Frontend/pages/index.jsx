@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import styles from '../styles/Headings.module.css';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 
 export default function Home() 
@@ -93,13 +94,16 @@ export default function Home()
                   </Button>
                   <Button variant="outlined" color="secondary" onClick={handleCall} >Find me a schedule</Button>
                 </h3>
+                <Link className={styles.hyperlink} href='/settings'>
+          Settings
+        </Link>
+        <h4 className={styles.centered}>{resMsg}</h4>
         </Box>
         <ul>
           {taskItems.map((task) => <li key={task.name}><p>{task.name}</p><span>{task.length}</span></li>)}
         </ul>
     
-        <Box></Box>
-        <h4 className={styles.centered}>{resMsg}</h4>
+
 
       </section>
     </Layout>
