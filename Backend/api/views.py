@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .google import Create_Service
-from .util import store_tasks, find_schedule
+from .util import store_tasks, find_schedule, validate_time
 import os, datetime
 from base.models import UserProfile
 from django.contrib.auth.models import User
@@ -69,14 +69,7 @@ def register(request):
         ):
             return Response("Invalid Username or Password")
 
-        if (
-            preferred_start < 0
-            or preferred_start > 24
-            or preferred_end < 0
-            or preferred_end > 24
-            or preferred_end < preferred_start
-        ):
-            return Response("Invalid preferred start/end times")
+        validate_time(preferred_start, preferred_end)
 
         user = User.objects.create_user(username=username, password=password)
         UserProfile.objects.create(
@@ -98,9 +91,32 @@ def signin(request):
 
 
 # update UserProfile fields based on new data
-@api_view(["UPDATE"])
+@api_view(["PUT"])
 def update_settings(request):
-    pass
+    data = request.data
+    """
+        Request format:
+        {
+            "user":"username",
+            "preferred_start":Int,
+            "preferred_end":Int
+        }
+
+    """
+    try:
+        user = User.objects.get(username=data["user"])
+    except:
+        return Response("User does not exist")
+    
+    profile = UserProfile.objects.get(user=user)
+
+    if validate_time(data["preferred_start"], data["preferred_end"]):
+        profile.preferred_start = data["preferred_start"]
+        profile.preferred_end = data["preferred_end"]
+        profile.save()
+        return Response("Update Successful")
+    else:
+        return Response("Invalid start/end times")
 
 
 """
@@ -135,7 +151,6 @@ def schedule(request):
 
     data = request.data
 
-    # UNCOMMENT THIS AFTER TESTING
     # Store user tasks in task table
     if not store_tasks(data):
         return Response("Failed")
@@ -181,7 +196,6 @@ def schedule(request):
                 # print(start, event["summary"])
                 valid_events.append(event)
 
-    # schedule = find_schedule(data["user"], valid_events)
     schedule = find_schedule(data["user"], valid_events)
     return Response(schedule)
 

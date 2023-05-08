@@ -4,6 +4,20 @@ from django.utils.timezone import make_aware
 import datetime
 
 
+# ensure start and end times are logical
+def validate_time(preferred_start, preferred_end):
+    if (
+        preferred_start < 0
+        or preferred_start > 24
+        or preferred_end < 0
+        or preferred_end > 24
+        or preferred_end < preferred_start
+    ):
+        return False
+    else:
+        return True
+
+
 # store a task in the db + validate
 def store_tasks(data):
     tasks = data["tasks"]

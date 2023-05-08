@@ -6,4 +6,5 @@ urlpatterns = [
     path("schedule/", views.schedule),
     path("register/", views.register),
     path("signin/", views.signin),
+    path("update/", views.update_settings),
 ]
