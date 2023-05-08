@@ -6,13 +6,14 @@ import TextField from '@mui/material/TextField';
 import styles from '../styles/Headings.module.css';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
+import { useRouter } from 'next/router';
 
 export default function Login() 
 {
-
+    const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [response, setResponse] = useState(null);
+    const [resMsg, setResMsg] = useState('');
 
     function handleUsernameChange(event)
     {
@@ -27,18 +28,27 @@ export default function Login()
     const handleCall = async() => {
         try {
             const body = JSON.stringify({username, password})
-            console.log(body)
 
-            const res = await fetch("localhost:3000/signin/", {
+            const res = await fetch("http://localhost:8000/signin/", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: body
             });
-            const data = await response.json();
-            setResponse(data);
-            // Do the logic here: wether we redirect to home or nah
+
+            const data = await res.json();
+
+            if (res.status == 200)
+            {
+                router.push('/')
+            }
+            else
+            {
+                setResMsg(data)
+            }
+
+            
         } catch (err) {
             console.error(err);
         }
@@ -66,9 +76,10 @@ export default function Login()
                 <TextField id="outlined-basic" label="Username" variant="outlined" onChange={handleUsernameChange} />
                 <TextField id="outlined-basic" label="Password" variant="outlined" onChange={handlePasswordChange} />
                 <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleCall}>
-                    Sign Up
+                    Sign in
                 </Button>
             </Box>
+            <h4 className={styles.centered}>{resMsg}</h4>
             <h3>
                 <Link className={styles.centerBox} href='/signup'>
                     No account yet?

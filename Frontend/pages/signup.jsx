@@ -11,7 +11,6 @@ export default function Signup()
 {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [response, setResponse] = useState(null);
     const [preferred_start, setStart] = useState(0);
     const [preferred_end, setEnd] = useState(0);
 
@@ -40,7 +39,7 @@ export default function Signup()
             const body = JSON.stringify({username, password, preferred_start, preferred_end})
             console.log(body)
 
-            const res = await fetch("localhost:3000/register/", {
+            const res = await fetch("http://localhost:8000/register/", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
