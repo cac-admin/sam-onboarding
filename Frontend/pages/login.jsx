@@ -4,9 +4,46 @@ import Layout from '../components/layout';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import styles from '../styles/Headings.module.css';
+import { useState } from 'react';
+import Button from '@mui/material/Button';
 
 export default function Login() 
 {
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [response, setResponse] = useState(null);
+
+    function handleUsernameChange(event)
+    {
+        setUsername(event.target.value);
+    }
+
+    function handlePasswordChange(event)
+    {
+        setPassword(event.target.value);
+    }
+
+    const handleCall = async() => {
+        try {
+            const body = JSON.stringify({username, password})
+            console.log(body)
+
+            const res = await fetch("localhost:3000/signin/", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: body
+            });
+            const data = await response.json();
+            setResponse(data);
+            // Do the logic here: wether we redirect to home or nah
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     return (
         // Comes from the Layout component we made
         <Layout>
@@ -26,8 +63,11 @@ export default function Login()
                 noValidate
                 autoComplete="off"
             >
-                <TextField id="outlined-basic" label="Username" variant="outlined" />
-                <TextField id="outlined-basic" label="Password" variant="outlined" />
+                <TextField id="outlined-basic" label="Username" variant="outlined" onChange={handleUsernameChange} />
+                <TextField id="outlined-basic" label="Password" variant="outlined" onChange={handlePasswordChange} />
+                <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleCall}>
+                    Sign Up
+                </Button>
             </Box>
             <h3>
                 <Link className={styles.centerBox} href='/signup'>
