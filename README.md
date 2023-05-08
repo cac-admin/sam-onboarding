@@ -26,7 +26,7 @@
 https://github.com/SamEThibault/calendar-helper/blob/main/app/calendarAPI.py
 
 # To Do:
-- Finish UI (polish)
+- Finish UI (polish, edit screen if time permits)
 - System Test: test GC API to see if current app can access other account calendars 
 - Check into backend data serialization
 - Switch from testing auth to proper authentication / sessions
