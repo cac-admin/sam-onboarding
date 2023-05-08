@@ -6,18 +6,19 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import styles from '../styles/Headings.module.css';
 import { useState } from 'react';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 import Link from 'next/link';
-
+import Tasks from '../components/Tasks';
 
 export default function Home() 
 {
-  const router = useRouter();
+  // const router = useRouter();
 
   const [resMsg, setResMsg] = useState('');
   const [name, setName] = useState('');
   const [length, setLength] = useState('');
   const [taskItems, setTaskItems] = useState([]);
+  const [result, setResult] = useState(null);
 
   function handleLength(event)
   {
@@ -29,7 +30,7 @@ export default function Home()
     setName(event.target.value);
   }
 
-  function handleTask(event)
+  function handleTask()
   {
     setTaskItems([...taskItems, {
     "name": name,
@@ -58,6 +59,7 @@ export default function Home()
         {
             console.log(data);
             setTaskItems([]);
+            setResult(data.tasks);
         }
         else
         {
@@ -99,12 +101,10 @@ export default function Home()
         </Link>
         <h4 className={styles.centered}>{resMsg}</h4>
         </Box>
-        <ul>
-          {taskItems.map((task) => <li key={task.name}><p>{task.name}</p><span>{task.length}</span></li>)}
-        </ul>
-    
 
-
+        <div>
+          <Tasks result={result} taskItems={taskItems} />
+        </div>
       </section>
     </Layout>
   )
