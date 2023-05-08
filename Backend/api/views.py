@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .util import store_tasks, find_schedule, validate_time
 import datetime
-from base.models import UserProfile
+from base.models import UserProfile, Task
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from myproject.settings import service
@@ -155,10 +155,11 @@ def schedule(request):
 
 
 # This route gets the confirmed Schedule object back, and calls the API to POST the final events
-# The request format is the same as the returned schedule
+# The request format is the same as the returned schedule +  *** the username ***
 @api_view(["POST"])
 def post_tasks(request):
     tasks = request.data["tasks"]
+    user = User.objects.get(username=request.data["user"])
 
     for task in tasks:
         if task["start"] is not None and task["end"] is not None:
@@ -181,5 +182,8 @@ def post_tasks(request):
                 },
             }
             service.events().insert(calendarId="primary", body=event).execute()
+    
+    # Now that we added the tasks to the calendar, we can rm from db
+    Task.objects.filter(user=user).delete()
 
     return Response("Success")

@@ -76,8 +76,6 @@ def find_schedule(username, events):
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
 
-        print(start, end)
-
         try:
             # Format of start and end: 2023-05-05T08:00:00-04:00
             start_dt = datetime.datetime.strptime(
@@ -116,12 +114,8 @@ def find_schedule(username, events):
             # sort these calendar events based on start time as well
             sorted(day_events, key=lambda x: x[1]["start"])
 
-            for event in day_events:
-                print(event[0]["summary"])
-
             # idea: find all empty slots between preferred_start - preferred_end
             # Once we find the slot, find the largest task we can fill it in
-
             slot_size = 0
             i = 0
             curr_time = preferred_start
