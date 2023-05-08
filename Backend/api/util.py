@@ -23,7 +23,7 @@ def store_tasks(data):
                 end=None,
             )
     except:
-        return False  # user does not exist for one or more tasks or a task is too long
+        return False  # user does not exist for one or more tasks
     return True
 
 
@@ -62,16 +62,24 @@ def find_schedule(username, events):
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
 
-        # Format of start and end: 2023-05-05T08:00:00-04:00
-        start_dt = datetime.datetime.strptime(
-            start.replace("-" + start.split("-")[-1], ""), "%Y-%m-%dT%X"
-        )
-        end_dt = datetime.datetime.strptime(
-            end.replace("-" + end.split("-")[-1], ""), "%Y-%m-%dT%X"
-        )
-        event_datetimes.append(
-            {"start": start_dt.hour, "end": end_dt.hour, "day": start_dt.day}
-        )
+        print(start, end)
+
+        try:
+            # Format of start and end: 2023-05-05T08:00:00-04:00
+            start_dt = datetime.datetime.strptime(
+                start.replace("-" + start.split("-")[-1], ""), "%Y-%m-%dT%X"
+            )
+            end_dt = datetime.datetime.strptime(
+                end.replace("-" + end.split("-")[-1], ""), "%Y-%m-%dT%X"
+            )
+            event_datetimes.append(
+                {"start": start_dt.hour, "end": end_dt.hour, "day": start_dt.day}
+            )
+        except:
+            # If that throws exception: it's an all-day event, format is: 2023-05-13
+            start_dt = datetime.datetime.strptime(start, "%Y-%m-%d")
+            end_dt = datetime.datetime.strptime(end, "%Y-%m-%d")
+            event_datetimes.append({"start": 0, "end": 0, "day": start_dt.day})
 
     # Go one day at a time: 7 days total
     used = [0] * len(tasks)
@@ -79,14 +87,13 @@ def find_schedule(username, events):
         # print("day: ", day)
         i = 0
         day_events = []
+        """
+            here we're collecting the events that are happening on that day, and we're keeping track of their start and end dates:
+            The structure is this day_events = [ (Full event information from API, Event start and end dates), ... ]
+        """
         for event in event_datetimes:
             if day == event["day"]:
                 # print("Event detected: ", events[i]["summary"])
-
-                """
-                here we're collecting the events that are happening on that day, and we're keeping track of their start and end dates:
-                The structure is this day_events = [ (Full event information from API, Event start and end dates), ... ]
-                """
                 day_events.append((events[i], event))
             i += 1
 
@@ -97,13 +104,16 @@ def find_schedule(username, events):
             # sort these calendar events based on start time as well
             sorted(day_events, key=lambda x: x[1]["start"])
 
+            for event in day_events:
+                print(event[0]["summary"])
+
             # idea: find all empty slots between preferred_start - preferred_end
             # Once we find the slot, find the largest task we can fill it in
 
             slot_size = 0
             i = 0
             curr_time = preferred_start
-            
+
             while i < len(day_events) and curr_time < preferred_end:
                 if day_events[i][1]["start"] > curr_time:
                     slot_size += 1
@@ -113,22 +123,27 @@ def find_schedule(username, events):
                     for task in tasks:
                         if task.length <= slot_size and used[j] == 0:
                             print(task.name + ": ")
-                            task.start = make_aware(datetime.datetime(
-                                now.year, now.month, day, curr_time - slot_size
-                            ))
-                            print(task.start)
-                            task.end = make_aware(datetime.datetime(
-                                now.year, now.month, day, task.start.hour + task.length
-                            ))
-                            print(task.end)
+                            task.start = make_aware(
+                                datetime.datetime(
+                                    now.year, now.month, day, curr_time - slot_size
+                                )
+                            )
+                            # print(task.start)
+                            task.end = make_aware(
+                                datetime.datetime(
+                                    now.year,
+                                    now.month,
+                                    day,
+                                    task.start.hour + task.length,
+                                )
+                            )
+                            # print(task.end)
                             task.save()
                             used[j] = 1
-                            j += 1
                             break
                         j += 1
-
+                    curr_time += slot_size
                     slot_size = 0
-                    curr_time = day_events[i][1]["end"]
                     i += 1
         else:
             # we have all day, squeeze as many tasks as you can in this day between preferred_start and preferred_end
@@ -142,14 +157,18 @@ def find_schedule(username, events):
                 temp = 0
                 for task in tasks:
                     if task.length <= slot_size and used[j] == 0:
-                        task.start = make_aware(datetime.datetime(
-                            now.year, now.month, day, curr_time - slot_size
-                        ))
+                        task.start = make_aware(
+                            datetime.datetime(
+                                now.year, now.month, day, curr_time - slot_size
+                            )
+                        )
                         print(task.name + ": ")
                         print(task.start)
-                        task.end = make_aware(datetime.datetime(
-                            now.year, now.month, day, task.start.hour + task.length
-                        ))
+                        task.end = make_aware(
+                            datetime.datetime(
+                                now.year, now.month, day, task.start.hour + task.length
+                            )
+                        )
                         print(task.end)
                         task.save()
                         task_len = task.length
@@ -176,5 +195,5 @@ def find_schedule(username, events):
                 "end": task.end,
             }
         )
-    
+
     return schedule
