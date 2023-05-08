@@ -12,10 +12,11 @@ import { useRouter } from 'next/router';
 export default function Home() 
 {
   const router = useRouter();
-  let tasks = [];
+
   const [resMsg, setResMsg] = useState('');
   const [name, setName] = useState('');
   const [length, setLength] = useState('');
+  const [taskItems, setTaskItems] = useState([]);
 
   function handleLength(event)
   {
@@ -29,17 +30,17 @@ export default function Home()
 
   function handleTask(event)
   {
-    tasks.push({
-      "name": name,
-      "length": length
-    })
+    setTaskItems([...taskItems, {
+    "name": name,
+    "length": length
+    }])
   }
 
   const handleCall = async() => {
     try {
         const body = JSON.stringify({
           "user": localStorage.getItem('username'),
-          "tasks": tasks
+          "tasks": taskItems
         })
         console.log(body)
         const res = await fetch("http://localhost:8000/schedule/", {
@@ -54,7 +55,8 @@ export default function Home()
         
         if (res.status == 200)
         {
-            console.log(data)
+            console.log(data);
+            setTaskItems([]);
         }
         else
         {
@@ -89,14 +91,14 @@ export default function Home()
                   <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleTask}>
                       Add task
                   </Button>
+                  <Button variant="outlined" color="secondary" onClick={handleCall} >Find me a schedule</Button>
                 </h3>
         </Box>
-        <Box>
-          <ol>
-            {tasks.map((task) => <li>{task}</li>)}
-          </ol>
-        </Box>
-        <Box><Button variant="outlined" color="secondary" onClick={handleCall} >Find me a schedule</Button></Box>
+        <ul>
+          {taskItems.map((task) => <li key={task.name}><p>{task.name}</p><span>{task.length}</span></li>)}
+        </ul>
+    
+        <Box></Box>
         <h4 className={styles.centered}>{resMsg}</h4>
 
       </section>
