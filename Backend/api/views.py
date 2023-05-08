@@ -1,48 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .google import Create_Service
 from .util import store_tasks, find_schedule, validate_time
-import os, datetime
+import datetime
 from base.models import UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-
-
-@api_view(["POST"])
-def calendar_test(request):
-    """
-    Example request body (JSON):
-    {
-        "name":"calendar Test",
-        "startDateTime":"2023-05-04T09:00:00-07:00",
-        "endDateTime":"2023-05-04T09:00:00-07:00"
-    }
-    """
-
-    event = request.data
-    print(os.getcwd())
-    CLIENT_SECRET_FILE = "api/credentials.json"
-    API_NAME = "calendar"
-    API_VERSION = "v3"
-    SCOPES = ["https://www.googleapis.com/auth/calendar"]
-
-    service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-
-    event = {
-        "summary": event["name"],
-        "start": {
-            "dateTime": event["startDateTime"],
-            "timeZone": "America/New_York",
-        },
-        "end": {
-            "dateTime": event["endDateTime"],
-            "timeZone": "America/New_York",
-        },
-    }
-
-    event = service.events().insert(calendarId="primary", body=event).execute()
-
-    return Response("Success")
+from myproject.settings import service
 
 
 # Create new User and UserProfile
@@ -107,7 +70,7 @@ def update_settings(request):
         user = User.objects.get(username=data["user"])
     except:
         return Response("User does not exist")
-    
+
     profile = UserProfile.objects.get(user=user)
 
     if validate_time(data["preferred_start"], data["preferred_end"]):
@@ -120,7 +83,6 @@ def update_settings(request):
 
 
 """
-    This one will be a big one:
         - First get the events from the user, store em in Task table
         - Then run the google script to authenticate user for API
         - Then retrieve all their events in their calendar for the next week
@@ -156,16 +118,9 @@ def schedule(request):
         return Response("Failed")
 
     # get event data for the next week
-    CLIENT_SECRET_FILE = "api/credentials.json"
-    API_NAME = "calendar"
-    API_VERSION = "v3"
-    SCOPES = ["https://www.googleapis.com/auth/calendar"]
-
-    service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     print("Getting the upcoming 25 events")
     now = datetime.datetime.utcnow().isoformat() + "Z"
     now_dt = datetime.datetime.utcnow()
-    # print(now_dt)
     events_result = (
         service.events()
         .list(
@@ -193,7 +148,6 @@ def schedule(request):
 
             # If it's in the next 7 days, save it
             if start_dt < now_dt.replace(day=now_dt.day + 7):
-                # print(start, event["summary"])
                 valid_events.append(event)
 
     schedule = find_schedule(data["user"], valid_events)
@@ -201,6 +155,31 @@ def schedule(request):
 
 
 # This route gets the confirmed Schedule object back, and calls the API to POST the final events
+# The request format is the same as the returned schedule
 @api_view(["POST"])
 def post_tasks(request):
-    pass
+    tasks = request.data["tasks"]
+
+    for task in tasks:
+        if task["start"] is not None and task["end"] is not None:
+            # Format: 2023-05-09T07:00:00Z
+            start_dt = datetime.datetime.strptime(task["start"], "%Y-%m-%dT%H:%M:%SZ")
+            end_dt = datetime.datetime.strptime(task["end"], "%Y-%m-%dT%H:%M:%SZ")
+            start = start_dt.replace(hour=start_dt.hour+4)
+            end = end_dt.replace(hour=end_dt.hour+4)
+            
+            print(start, end)
+            event = {
+                "summary": task["name"],
+                "start": {
+                    "dateTime": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "timeZone": "America/Toronto",
+                },
+                "end": {
+                    "dateTime": end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "timeZone": "America/Toronto",
+                },
+            }
+            service.events().insert(calendarId="primary", body=event).execute()
+
+    return Response("Success")

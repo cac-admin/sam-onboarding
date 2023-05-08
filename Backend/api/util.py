@@ -98,7 +98,6 @@ def find_schedule(username, events):
     # Go one day at a time: 7 days total
     used = [0] * len(tasks)
     for day in range(1 + now.day, 8 + now.day):
-        # print("day: ", day)
         i = 0
         day_events = []
         """
@@ -107,7 +106,6 @@ def find_schedule(username, events):
         """
         for event in event_datetimes:
             if day == event["day"]:
-                # print("Event detected: ", events[i]["summary"])
                 day_events.append((events[i], event))
             i += 1
 
@@ -142,7 +140,6 @@ def find_schedule(username, events):
                                     now.year, now.month, day, curr_time - slot_size
                                 )
                             )
-                            # print(task.start)
                             task.end = make_aware(
                                 datetime.datetime(
                                     now.year,
@@ -151,7 +148,6 @@ def find_schedule(username, events):
                                     task.start.hour + task.length,
                                 )
                             )
-                            # print(task.end)
                             task.save()
                             used[j] = 1
                             break
@@ -166,7 +162,6 @@ def find_schedule(username, events):
 
             while curr_time < preferred_end:
                 task_len = 0
-                # print(curr_time)
                 j = 0
                 temp = 0
                 for task in tasks:
@@ -176,14 +171,11 @@ def find_schedule(username, events):
                                 now.year, now.month, day, curr_time - slot_size
                             )
                         )
-                        print(task.name + ": ")
-                        print(task.start)
                         task.end = make_aware(
                             datetime.datetime(
                                 now.year, now.month, day, task.start.hour + task.length
                             )
                         )
-                        print(task.end)
                         task.save()
                         task_len = task.length
                         temp = task.end.hour
