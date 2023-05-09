@@ -15,7 +15,6 @@ export default function Settings()
     const [preferred_end, setEnd] = useState('');
     const [resMsg, setResMsg] = useState('');
     const [content, setContent] = useState(<></>)
-    const [token, setToken] = useState(null);
 
     function handleStart(event)
     {
@@ -63,7 +62,6 @@ export default function Settings()
     {
         if (localStorage.getItem("token") != null)
         {
-            setToken(localStorage.getItem("token"))
             setContent(
                 <Layout>
 
@@ -99,7 +97,7 @@ export default function Settings()
                 </>
             )
         }
-    }, [token])
+    }, [preferred_start, preferred_end])
 
     return content;
 }

@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 export default function Home() 
 {
-  const [token, setToken] = useState(null);
+  // const [token, setToken] = useState(null);
   const [resMsg, setResMsg] = useState('');
   const [name, setName] = useState('');
   const [length, setLength] = useState('');
@@ -35,6 +35,7 @@ export default function Home()
     "name": name,
     "length": length
     }])
+    console.log(taskItems)
   }
   
   const handleCall = async() => {
@@ -79,7 +80,7 @@ export default function Home()
   {
     if (localStorage.getItem("token") != null)
     {
-      setToken(localStorage.getItem("token"))
+      // setToken(localStorage.getItem("token"))
       setContent(
         <Layout home>
         <Head>
@@ -123,7 +124,7 @@ export default function Home()
         </>
       )
     }
-  }, [token])
+  }, [name, length, taskItems, result])
 
   return content;
 }

@@ -7,11 +7,9 @@ import styles from '../styles/Headings.module.css';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/router';
-// import Cookies from 'js-cookie';
 
 export default function Login() 
 {
-    // const csrftoken = Cookies.get('csrftoken');
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
