@@ -11,7 +11,6 @@ import Link from 'next/link';
 
 export default function Home() 
 {
-  // const [token, setToken] = useState(null);
   const [resMsg, setResMsg] = useState('');
   const [name, setName] = useState('');
   const [length, setLength] = useState('');
@@ -80,7 +79,6 @@ export default function Home()
   {
     if (localStorage.getItem("token") != null)
     {
-      // setToken(localStorage.getItem("token"))
       setContent(
         <Layout home>
         <Head>
@@ -88,9 +86,9 @@ export default function Home()
         </Head>
         <section className={utilStyles.headingMd}>
           <h1 className={styles.centered}>Add tasks that must be completed in the next 7 days</h1>
-  
+          <p style={{"text-align":"center"}} className={styles.centered}>{resMsg}</p>
           <Box
-                  className={styles.centerBox}
+                  className={styles.centered}
                   component="form"
                   sx={{
                       '& > :not(style)': { m: 1, width: '25ch' },
@@ -101,12 +99,12 @@ export default function Home()
                   <TextField id="outlined-basic" label="Task Name" variant="outlined" onChange={handleName} />
                   <TextField id="outlined-basic" label="Task Length (1 to 23 hours)" variant="outlined" onChange={handleLength} />
                   <h3>
-                    <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleTask}>
+                    <Button style={{"margin-right":30}} variant="outlined" color="secondary" onClick={handleTask}>
                         Add task
                     </Button>
-                    <Button variant="outlined" color="secondary" onClick={handleCall} >Find me a schedule</Button>
+                    <Button className={styles.centered} variant="outlined" color="secondary" onClick={handleCall} >Find me a schedule</Button>
                   </h3>
-          <h4 className={styles.centered}>{resMsg}</h4>
+         
           </Box>
   
           <div>
@@ -124,7 +122,7 @@ export default function Home()
         </>
       )
     }
-  }, [name, length, taskItems, result])
+  }, [name, length, taskItems, result, resMsg])
 
   return content;
 }

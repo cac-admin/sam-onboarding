@@ -113,7 +113,7 @@ export default function Tasks(props)
                 ))}
               </TableBody>
             </Table>
-            <Button variant="contained" color="primary" onClick={handleCall} >Confirm</Button>
+            <Button style={{"margin-left":10}} variant="contained" color="primary" onClick={handleCall} >Confirm</Button>
             <Button style={{margin:20}} variant="contained" color="primary" onClick={handleEdit} >Edit</Button>
             <h4>{resMsg}</h4>
             

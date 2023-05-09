@@ -72,9 +72,9 @@ export default function Settings()
     
                 <Box className={styles.centered}>
                 <p>
-                    <TextField  type="number" style = {{width: 275}} id="outlined-basic" label="Updated Preferred Start Time" variant="outlined" onChange={handleStart} />
+                    <TextField  type="number" style = {{width: 300}} id="outlined-basic" label="Updated Preferred Start Time" variant="outlined" onChange={handleStart} />
                 </p>
-                    <TextField type="number" style = {{width: 275}} id="outlined-basic" label="Updated Preferred End Time" variant="outlined" onChange={handleEnd} />
+                    <TextField type="number" style = {{width: 300}} id="outlined-basic" label="Updated Preferred End Time" variant="outlined" onChange={handleEnd} />
                 <p>
                     <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleCall}>
                         Update Preferences
@@ -85,7 +85,7 @@ export default function Settings()
                     <Link href="/">Back to Home</Link>
                 </h2>
     
-                <h4 className={styles.centered}>{resMsg}</h4>
+                <h4 style={{"text-align":"center"}} className={styles.centered}>{resMsg}</h4>
             </Layout>
             )
         } else
@@ -97,7 +97,7 @@ export default function Settings()
                 </>
             )
         }
-    }, [preferred_start, preferred_end])
+    }, [preferred_start, preferred_end, resMsg])
 
     return content;
 }
