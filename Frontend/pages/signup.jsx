@@ -53,7 +53,8 @@ export default function Signup()
             
             if (res.status == 200)
             {
-                localStorage.setItem('username', username)
+                console.log(res.headers)
+                // localStorage.setItem('token', res)
                 router.push('/login');
             }
             else

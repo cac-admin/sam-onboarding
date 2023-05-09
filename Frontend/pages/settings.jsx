@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
 export default function Settings() 
 {
@@ -14,7 +14,6 @@ export default function Settings()
     const [preferred_start, setStart] = useState('');
     const [preferred_end, setEnd] = useState('');
     const [resMsg, setResMsg] = useState('');
-    const username = localStorage.getItem('username');
 
     function handleStart(event)
     {
@@ -28,12 +27,13 @@ export default function Settings()
 
     const handleCall = async() => {
         try {
-            const body = JSON.stringify({username, preferred_start, preferred_end})
+            const body = JSON.stringify({preferred_start, preferred_end})
 
             const res = await fetch("http://localhost:8000/update/", {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': "Token " + localStorage.getItem("token")
                 },
                 body: body
             });
@@ -44,9 +44,12 @@ export default function Settings()
             {
                 router.push('/');
             }
+            else if (res.status == 401)
+            {
+                setResMsg("Unauthorized");
+            }
             else
             {
-                console.log(data)
                 setResMsg(data);
             }
         } catch (err) {

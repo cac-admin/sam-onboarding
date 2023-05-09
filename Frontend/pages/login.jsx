@@ -7,9 +7,11 @@ import styles from '../styles/Headings.module.css';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/router';
+// import Cookies from 'js-cookie';
 
 export default function Login() 
 {
+    // const csrftoken = Cookies.get('csrftoken');
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -32,8 +34,9 @@ export default function Login()
             const res = await fetch("http://localhost:8000/signin/", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
+                credentials: 'same-origin',
                 body: body
             });
 
@@ -41,8 +44,12 @@ export default function Login()
 
             if (res.status == 200)
             {
-                localStorage.setItem('username', username)
+                localStorage.setItem("token", data.token)
                 router.push('/')
+            }
+            else if (res.status == 401)
+            {
+                setResMsg("Unauthorized")
             }
             else
             {

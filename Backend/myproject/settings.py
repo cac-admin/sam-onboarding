@@ -36,6 +36,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE = False
 
 # Application definition
 
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
     # Added both of these below
     "rest_framework",
     "base",
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -78,6 +81,16 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
+    ],
+}
 
 WSGI_APPLICATION = "myproject.wsgi.application"
 

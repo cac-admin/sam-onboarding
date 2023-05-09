@@ -9,6 +9,7 @@ import { useState } from 'react';
 // import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Tasks from '../components/Tasks';
+// import Cookies from 'js-cookie';
 
 export default function Home() 
 {
@@ -37,19 +38,20 @@ export default function Home()
     "length": length
     }])
   }
-
+  
   const handleCall = async() => {
     try {
         const body = JSON.stringify({
-          "user": localStorage.getItem('username'),
           "tasks": taskItems
         })
         console.log(body)
         const res = await fetch("http://localhost:8000/schedule/", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': "Token " + localStorage.getItem("token")
             },
+            credentials: 'same-origin',
             body: body
         });
 
@@ -60,6 +62,10 @@ export default function Home()
             console.log(data);
             setTaskItems([]);
             setResult(data.tasks);
+        }
+        else if (res.status == 401)
+        {
+            setResMsg("Unauthorized")
         }
         else
         {

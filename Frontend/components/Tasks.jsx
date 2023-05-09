@@ -7,6 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
+// import Cookies from 'js-cookie';
 
 
 export default function Tasks(props)
@@ -17,15 +18,16 @@ export default function Tasks(props)
     const handleCall = async() => {
         try {
             const body = JSON.stringify({
-              "user": localStorage.getItem('username'),
               "tasks": props.result
             })
             console.log(body)
             const res = await fetch("http://localhost:8000/confirm/", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': "Token " + localStorage.getItem("token")
                 },
+                credentials: 'same-origin',
                 body: body
             });
     
@@ -35,6 +37,10 @@ export default function Tasks(props)
             {
                 console.log(data);
                 setResMsg(data)
+            }
+            else if (res.status == 401)
+            {
+                setResMsg("Unauthorized")
             }
             else
             {
