@@ -7,6 +7,4 @@ urlpatterns = [
     path("signin/", views.signin),
     path("update/", views.update_settings),
     path("confirm/", views.post_tasks),
-    # path("logout/", views.log_out),
-    # path("api-token-auth/", views.obtain_auth_token, name="api-token-auth"),
 ]

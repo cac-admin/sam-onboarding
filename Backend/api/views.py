@@ -189,9 +189,3 @@ def post_tasks(request):
     Task.objects.filter(user=user).delete()
 
     return Response("Successfully added tasks to calendar!", 200)
-
-
-# @api_view(["POST"])
-# def log_out(request):
-#     logout(request)
-#     return Response("You have been logged out.", 200)
