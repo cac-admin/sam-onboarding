@@ -13,33 +13,12 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/ChecklistRtlSharp';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 function NavBar() {
   const router = useRouter();
-  const [token, setToken] = useState(null);
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [settingsContent, setSettingsContent] = useState(<></>);
-
-  useEffect(() => 
-  {
-    if (localStorage.getItem("token") != null)
-    {
-        setToken(localStorage.getItem("token"))
-        setSettingsContent(
-        <MenuItem>
-            <Link href='/settings' textAlign="center">Settings</Link>
-        </MenuItem>
-        )
-    }
-    else
-    {
-        setSettingsContent(
-            <></>
-            )
-    }
-  }, [token])
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -159,7 +138,9 @@ function NavBar() {
               onClose={handleCloseUserMenu}
             >
 
-            {settingsContent}
+            <MenuItem>
+                <Link href='/settings' textAlign="center">Settings</Link>
+            </MenuItem>
             <MenuItem>
                 <Typography onClick={handleLogout} textAlign="center">Log out</Typography>
             </MenuItem>

@@ -86,11 +86,11 @@ export default function Login()
                 </Button>
             </Box>
             <h4 className={styles.centered}>{resMsg}</h4>
-            <h3>
-                <Link className={styles.centerBox} href='/signup'>
-                    No account yet?
-                </Link>
-            </h3>
+            
+            <Link className={styles.centerBox} href='/signup'>
+                No account yet?
+            </Link>
+            
             
         </Layout>
     );
