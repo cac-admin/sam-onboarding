@@ -19,12 +19,12 @@ def validate_time(preferred_start, preferred_end):
 
 
 # store a task in the db + validate
-def store_tasks(data):
-    tasks = data["tasks"]
+def store_tasks(request):
+    tasks = request.data["tasks"]
     user = None
     # User validation check / length validation
     try:
-        user = User.objects.get(username=data["user"])
+        user = User.objects.get(username=request.user)
         for task in tasks:
             if int(task["length"]) > 24:
                 return False

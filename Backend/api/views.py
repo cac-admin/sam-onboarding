@@ -4,7 +4,7 @@ from .util import store_tasks, find_schedule, validate_time
 import datetime
 from base.models import UserProfile, Task
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login, logout
 from myproject.settings import service
 
 
@@ -46,8 +46,9 @@ def register(request):
 def signin(request):
     data = request.data
     username, password = data["username"], data["password"]
-    user = authenticate(username=username, password=password)
+    user = authenticate(request, username=username, password=password)
     if user is not None:
+        login(request, user)
         return Response("Authenticated", 200)
     else:
         return Response("Authentication failed: wrong username or password", 400)
@@ -56,30 +57,32 @@ def signin(request):
 # update UserProfile fields based on new data
 @api_view(["PUT"])
 def update_settings(request):
-    data = request.data
-    """
-        Request format:
-        {
-            "user":"username",
-            "preferred_start":Int,
-            "preferred_end":Int
-        }
+    if request.user.is_authenticated:
+        data = request.data
+        """
+            Request format:
+            {
+                "preferred_start":Int,
+                "preferred_end":Int
+            }
 
-    """
-    try:
-        user = User.objects.get(username=data["username"])
-    except:
-        return Response("User does not exist", 400)
+        """
+        try:
+            user = User.objects.get(username=request.user)
+        except:
+            return Response("User does not exist", 400)
 
-    profile = UserProfile.objects.get(user=user)
+        profile = UserProfile.objects.get(user=user)
 
-    if validate_time(data["preferred_start"], data["preferred_end"]):
-        profile.preferred_start = data["preferred_start"]
-        profile.preferred_end = data["preferred_end"]
-        profile.save()
-        return Response("Update Successful", 200)
+        if validate_time(data["preferred_start"], data["preferred_end"]):
+            profile.preferred_start = data["preferred_start"]
+            profile.preferred_end = data["preferred_end"]
+            profile.save()
+            return Response("Update Successful", 200)
+        else:
+            return Response("Invalid start/end times", 400)
     else:
-        return Response("Invalid start/end times", 400)
+        return Response("User is not authenticated, please log in.", 400)
 
 
 """
@@ -97,7 +100,6 @@ def schedule(request):
     """
     Format of request body:
     {
-        "user": "username",
         "tasks": [
             {
                 "name":
@@ -108,81 +110,89 @@ def schedule(request):
         ]
     }
     """
+    if request.user.is_authenticated:
+        # Store user tasks in task table
+        if not store_tasks(request):
+            return Response(
+                "Failed: Ensure that each task length is valid (under 24 hours long)", 400
+            )
 
-    data = request.data
-
-    # Store user tasks in task table
-    if not store_tasks(data):
-        return Response(
-            "Failed: Ensure that each task length is valid (under 24 hours long)", 400
+        # get event data for the next week
+        print("Getting the upcoming 25 events")
+        now = datetime.datetime.utcnow().isoformat() + "Z"
+        now_dt = datetime.datetime.utcnow()
+        events_result = (
+            service.events()
+            .list(
+                calendarId="primary",
+                timeMin=now,
+                maxResults=25,
+                singleEvents=True,
+                orderBy="startTime",
+            )
+            .execute()
         )
+        events = events_result.get("items", [])
 
-    # get event data for the next week
-    print("Getting the upcoming 25 events")
-    now = datetime.datetime.utcnow().isoformat() + "Z"
-    now_dt = datetime.datetime.utcnow()
-    events_result = (
-        service.events()
-        .list(
-            calendarId="primary",
-            timeMin=now,
-            maxResults=25,
-            singleEvents=True,
-            orderBy="startTime",
-        )
-        .execute()
-    )
-    events = events_result.get("items", [])
+        # Prints the start and name of next week's events
+        valid_events = []
+        if not events:
+            print("No upcoming events found.")
+        else:
+            for event in events:
+                start = event["start"].get("dateTime", event["start"].get("date"))
 
-    # Prints the start and name of next week's events
-    valid_events = []
-    if not events:
-        print("No upcoming events found.")
+                # Format or start: 2023-05-05T08:00:00-04:00
+                # Convert to datetime for comparison
+                start_dt = datetime.datetime.strptime(start.split("T")[0], "%Y-%m-%d")
+
+                # If it's in the next 7 days, save it
+                if start_dt < now_dt.replace(day=now_dt.day + 7):
+                    valid_events.append(event)
+
+        schedule = find_schedule(request.user, valid_events)
+        return Response(schedule, 200)
     else:
-        for event in events:
-            start = event["start"].get("dateTime", event["start"].get("date"))
-
-            # Format or start: 2023-05-05T08:00:00-04:00
-            # Convert to datetime for comparison
-            start_dt = datetime.datetime.strptime(start.split("T")[0], "%Y-%m-%d")
-
-            # If it's in the next 7 days, save it
-            if start_dt < now_dt.replace(day=now_dt.day + 7):
-                valid_events.append(event)
-
-    schedule = find_schedule(data["user"], valid_events)
-    return Response(schedule, 200)
+        return Response("User is not authenticated, please log in", 400)
 
 
 # This route gets the confirmed Schedule object back, and calls the API to POST the final events
 # The request format is the same as the returned schedule +  *** the username ***
 @api_view(["POST"])
 def post_tasks(request):
-    tasks = request.data["tasks"]
-    user = User.objects.get(username=request.data["user"])
+    if request.user.is_authenticated:
+        tasks = request.data["tasks"]
+        user = User.objects.get(username=request.user)
 
-    for task in tasks:
-        if task["start"] is not None and task["end"] is not None:
-            # Format: 2023-05-09T07:00:00Z
-            start_dt = datetime.datetime.strptime(task["start"], "%Y-%m-%dT%H:%M:%SZ")
-            end_dt = datetime.datetime.strptime(task["end"], "%Y-%m-%dT%H:%M:%SZ")
-            start = start_dt.replace(hour=start_dt.hour + 4)
-            end = end_dt.replace(hour=end_dt.hour + 4)
+        for task in tasks:
+            if task["start"] is not None and task["end"] is not None:
+                # Format: 2023-05-09T07:00:00Z
+                start_dt = datetime.datetime.strptime(task["start"], "%Y-%m-%dT%H:%M:%SZ")
+                end_dt = datetime.datetime.strptime(task["end"], "%Y-%m-%dT%H:%M:%SZ")
+                start = start_dt.replace(hour=start_dt.hour + 4)
+                end = end_dt.replace(hour=end_dt.hour + 4)
 
-            event = {
-                "summary": task["name"],
-                "start": {
-                    "dateTime": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "timeZone": "America/Toronto",
-                },
-                "end": {
-                    "dateTime": end.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "timeZone": "America/Toronto",
-                },
-            }
-            service.events().insert(calendarId="primary", body=event).execute()
+                event = {
+                    "summary": task["name"],
+                    "start": {
+                        "dateTime": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "timeZone": "America/Toronto",
+                    },
+                    "end": {
+                        "dateTime": end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "timeZone": "America/Toronto",
+                    },
+                }
+                service.events().insert(calendarId="primary", body=event).execute()
 
-    # Now that we added the tasks to the calendar, we can rm from db
-    Task.objects.filter(user=user).delete()
+        # Now that we added the tasks to the calendar, we can rm from db
+        Task.objects.filter(user=user).delete()
 
-    return Response("Successfully added tasks to calendar!", 200)
+        return Response("Successfully added tasks to calendar!", 200)
+    else:
+        return Response("User is not authenticated, please log in.", 400)
+
+@api_view(["POST"])
+def log_out(request):
+    logout(request)
+    return Response("You have been logged out.", 200)
