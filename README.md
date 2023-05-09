@@ -1,7 +1,7 @@
 # cac-onboarding
 
 ## IDEAS
-- Task Scheduling Algorithm (Greedy), with GC API
+- Task Scheduling Algorithm with GC API
 - Auto Tab and Application Opener: - Path\To\Chrome\chrome.exe superuser.com stackoverflow.com ...
 	Just make them create an account, enter their browser exe path, and then create sessions with different automations
 	Would need to bundle executable windows application, so not rly web app
@@ -26,7 +26,7 @@
 https://github.com/SamEThibault/calendar-helper/blob/main/app/calendarAPI.py
 
 # To Do:
-- Finish UI (polish, edit screen if time permits)
+- Finish UI (polish)
 - System Test: test GC API to see if current app can access other account calendars 
 - Check into backend data serialization
 - Switch from testing auth to proper authentication / sessions
