@@ -7,12 +7,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
-// import Cookies from 'js-cookie';
 
 
 export default function Tasks(props)
 {
-    // const [result, setResult] = useState(props.result);
     const [resMsg, setResMsg] = useState('');
 
     const handleCall = async() => {
@@ -58,7 +56,7 @@ export default function Tasks(props)
         return // nothing yet
     }
 
-        return props.result == null ?  (
+    return props.result == null ?  (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 50 }} aria-label="simple table">
         <TableHead>
@@ -115,7 +113,7 @@ export default function Tasks(props)
                 ))}
               </TableBody>
             </Table>
-            <Button variant="contained" color="primary" onClick={handleCall} >Confirm</Button>
+            <Button style={{"margin-left":10}} variant="contained" color="primary" onClick={handleCall} >Confirm</Button>
             <Button style={{margin:20}} variant="contained" color="primary" onClick={handleEdit} >Edit</Button>
             <h4>{resMsg}</h4>
             

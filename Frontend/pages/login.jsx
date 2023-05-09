@@ -7,11 +7,9 @@ import styles from '../styles/Headings.module.css';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/router';
-// import Cookies from 'js-cookie';
 
 export default function Login() 
 {
-    // const csrftoken = Cookies.get('csrftoken');
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -88,11 +86,11 @@ export default function Login()
                 </Button>
             </Box>
             <h4 className={styles.centered}>{resMsg}</h4>
-            <h3>
-                <Link className={styles.centerBox} href='/signup'>
-                    No account yet?
-                </Link>
-            </h3>
+            
+            <Link className={styles.centerBox} href='/signup'>
+                No account yet?
+            </Link>
+            
             
         </Layout>
     );

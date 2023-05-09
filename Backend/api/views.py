@@ -35,7 +35,7 @@ def register(request):
         ):
             return Response("Invalid Username or Password", 400)
 
-        validate_time(preferred_start, preferred_end)
+        validate_time(int(preferred_start), int(preferred_end))
 
         # create user, profile, and token
         
@@ -81,7 +81,7 @@ def update_settings(request):
 
     profile = UserProfile.objects.get(user=user)
 
-    if validate_time(data["preferred_start"], data["preferred_end"]):
+    if validate_time(int(data["preferred_start"]), int(data["preferred_end"])):
         profile.preferred_start = data["preferred_start"]
         profile.preferred_end = data["preferred_end"]
         profile.save()

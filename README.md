@@ -18,7 +18,7 @@
 https://github.com/SamEThibault/calendar-helper/blob/main/app/calendarAPI.py
 
 # To Do:
-- Finish UI (polish): add navbar with links including logout which flushes localStorage token
+- Figure out algorithm bug (specifically, adding tasks in the event of events on Fridays)
 - System Test: test GC API to see if current app can access other account calendars 
 - Check into backend data serialization
 - Deploy if time permits
