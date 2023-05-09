@@ -4,7 +4,7 @@ import Layout from '../components/layout';
 import styles from '../styles/Headings.module.css';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/router';
 
@@ -14,21 +14,23 @@ export default function Settings()
     const [preferred_start, setStart] = useState('');
     const [preferred_end, setEnd] = useState('');
     const [resMsg, setResMsg] = useState('');
+    const [content, setContent] = useState(<></>)
+    const [token, setToken] = useState(null);
 
     function handleStart(event)
     {
-        setStart(parseInt(event.target.value));
+        setStart(event.target.value);
     }
 
     function handleEnd(event)
     {
-        setEnd(parseInt(event.target.value));
+        setEnd(event.target.value);
     }
 
     const handleCall = async() => {
         try {
             const body = JSON.stringify({preferred_start, preferred_end})
-
+            console.log(body)
             const res = await fetch("http://localhost:8000/update/", {
                 method: 'PUT',
                 headers: {
@@ -57,31 +59,47 @@ export default function Settings()
         }
     }
 
-    return (
-        // Comes from the Layout component we made
-        <Layout>
+    useEffect (() => 
+    {
+        if (localStorage.getItem("token") != null)
+        {
+            setToken(localStorage.getItem("token"))
+            setContent(
+                <Layout>
 
-            <Head>
-                <title>Settings</title>
-            </Head>
-            <h1 className={styles.centered}> Settings </h1>
+                <Head>
+                    <title>Settings</title>
+                </Head>
+                <h1 className={styles.centered}> Settings </h1>
+    
+                <Box className={styles.centered}>
+                <p>
+                    <TextField  type="number" style = {{width: 275}} id="outlined-basic" label="Updated Preferred Start Time" variant="outlined" onChange={handleStart} />
+                </p>
+                    <TextField type="number" style = {{width: 275}} id="outlined-basic" label="Updated Preferred End Time" variant="outlined" onChange={handleEnd} />
+                <p>
+                    <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleCall}>
+                        Update Preferences
+                    </Button>
+                </p>
+                </Box>  
+                <h2 className={styles.centered} >
+                    <Link href="/">Back to Home</Link>
+                </h2>
+    
+                <h4 className={styles.centered}>{resMsg}</h4>
+            </Layout>
+            )
+        } else
+        {
+            setContent(
+                <>
+                    <p>You need an account to access this page, please log in...</p>
+                    <Link href='/login'>Log in</Link>
+                </>
+            )
+        }
+    }, [token])
 
-            <Box className={styles.centered}>
-            <p>
-                <TextField style = {{width: 275}} id="outlined-basic" label="Updated Preferred Start Time" variant="outlined" onChange={handleStart} />
-            </p>
-                <TextField style = {{width: 275}} id="outlined-basic" label="Updated Preferred End Time" variant="outlined" onChange={handleEnd} />
-            <p>
-                <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleCall}>
-                    Update Preferences
-                </Button>
-            </p>
-            </Box>  
-            <h2 className={styles.centered} >
-                <Link href="/">Back to Home</Link>
-            </h2>
-
-            <h4 className={styles.centered}>{resMsg}</h4>
-        </Layout>
-    );
+    return content;
 }
