@@ -43,7 +43,7 @@ export default function Home()
           "tasks": taskItems
         })
         console.log(body)
-        const res = await fetch("http://localhost:8000/schedule/", {
+        const res = await fetch("http://127.0.0.1:8000/schedule/", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
