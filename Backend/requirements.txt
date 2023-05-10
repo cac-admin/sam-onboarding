@@ -4,3 +4,4 @@ google-auth-oauthlib
 django
 djangorestframework
 python-dotenv
+django-cors-headers

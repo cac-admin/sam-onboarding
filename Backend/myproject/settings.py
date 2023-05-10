@@ -39,6 +39,12 @@ ALLOWED_HOSTS = [".samthibault.live", "127.0.0.1"]
 # SESSION_COOKIE_HTTPONLY = False
 # SESSION_COOKIE_SECURE = False
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:3000',
+)
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,7 +57,8 @@ INSTALLED_APPS = [
     # Added both of these below
     "rest_framework",
     "base",
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -62,6 +69,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware"
 ]
 
 ROOT_URLCONF = "myproject.urls"

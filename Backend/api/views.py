@@ -44,8 +44,9 @@ def register(request):
         UserProfile.objects.create(
             user=user, preferred_start=preferred_start, preferred_end=preferred_end
         )
-        return Response("Registration Successful", 200)
-
+        res = Response("Registration Successful", 200)
+        res['Access-Control-Allow-Origin'] = "*"
+        return res 
 
 # check with User table to see if user can be authenticated
 @api_view(["POST"])
@@ -55,11 +56,15 @@ def signin(request):
     username, password = data["username"], data["password"]
     user = authenticate(request, username=username, password=password)
     if user is not None:
-        return Response({
+        res = Response({
             "token": Token.objects.get(user=user).key
         }, 200)
+        res['Access-Control-Allow-Origin'] = "*"
+        return res
     else:
-        return Response("Authentication failed: wrong username or password", 400)
+        res = Response("Authentication failed: wrong username or password", 400)
+        res['Access-Control-Allow-Origin'] = "*"
+        return res 
 
 
 # update UserProfile fields based on new data
@@ -77,7 +82,9 @@ def update_settings(request):
     try:
         user = User.objects.get(username=request.user)
     except:
-        return Response("User does not exist", 400)
+        res = Response("User does not exist", 400)
+        res['Access-Control-Allow-Origin'] = "*"
+        return res
 
     profile = UserProfile.objects.get(user=user)
 
@@ -85,9 +92,13 @@ def update_settings(request):
         profile.preferred_start = data["preferred_start"]
         profile.preferred_end = data["preferred_end"]
         profile.save()
-        return Response("Update Successful", 200)
+        res = Response("Update Successful", 200)
+        res['Access-Control-Allow-Origin'] = "*"
+        return res
     else:
-        return Response("Invalid start/end times", 400)
+        res = Response("Invalid start/end times", 400)
+        res['Access-Control-Allow-Origin'] = "*"
+        return res
 
 """
         - First get the events from the user, store em in Task table
@@ -116,9 +127,11 @@ def schedule(request):
     """
     # Store user tasks in task table
     if not store_tasks(request):
-        return Response(
+        res = Response(
             "Failed: Ensure that each task length is valid (under 24 hours long)", 400
         )
+        res['Access-Control-Allow-Origin'] = "*"
+        return res
 
     # get event data for the next week
     print("Getting the upcoming 25 events")
@@ -154,7 +167,9 @@ def schedule(request):
                 valid_events.append(event)
 
     schedule = find_schedule(request.user, valid_events)
-    return Response(schedule, 200)
+    res = Response(schedule, 200)
+    res['Access-Control-Allow-Origin'] = "*"
+    return res
 
 
 # This route gets the confirmed Schedule object back, and calls the API to POST the final events
@@ -188,4 +203,6 @@ def post_tasks(request):
     # Now that we added the tasks to the calendar, we can rm from db
     Task.objects.filter(user=user).delete()
 
-    return Response("Successfully added tasks to calendar!", 200)
+    res = Response("Successfully added tasks to calendar!", 200)
+    res['Access-Control-Allow-Origin'] = "*"
+    return res
