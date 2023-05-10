@@ -77,7 +77,7 @@ export default function Signup()
             <h1 className={styles.centered}> Sign Up </h1>
 
             <Box
-                className={styles.centerBox}
+                style={{"margin-left":50}}
                 component="form"
                 sx={{
                     '& > :not(style)': { m: 1, width: '25ch' },
@@ -90,16 +90,14 @@ export default function Signup()
                 <TextField id="outlined-basic" label="Preferred Start Time" variant="outlined" onChange={handleStart} />
                 <TextField id="outlined-basic" label="Preferred End Time" variant="outlined" onChange={handleEnd} />
 
-   
-            </Box>
-            <h3>
-                <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleCall}>
+                <Button  variant="outlined" color="secondary" onClick={handleCall}>
                     Sign Up
                 </Button>
-                <Link className={styles.hyperlink} href='/login'>
-                    Have an account already?
+                <Link style={{"margin-left":40}} className={styles.hyperlink} href='/login'>
+                        Have an account already?
                 </Link>
-            </h3>
+            </Box>
+
             <h4 className={styles.centered}>{resMsg}</h4>
             
         </Layout>

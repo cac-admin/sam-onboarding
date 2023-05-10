@@ -1,6 +1,6 @@
 # cac-onboarding
 ## STACK
-- Django (REST), check for db options
+- Django (REST) + sqlite
 - Next JS
 - Material UI
 - GH Actions

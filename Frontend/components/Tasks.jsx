@@ -33,7 +33,6 @@ export default function Tasks(props)
             
             if (res.status == 200)
             {
-                console.log(data);
                 setResMsg(data)
             }
             else if (res.status == 401)
@@ -115,7 +114,7 @@ export default function Tasks(props)
             </Table>
             <Button style={{"margin-left":10}} variant="contained" color="primary" onClick={handleCall} >Confirm</Button>
             <Button style={{margin:20}} variant="contained" color="primary" onClick={handleEdit} >Edit</Button>
-            <h4>{resMsg}</h4>
+            <h4 style={{"text-align":"center"}}>{resMsg}</h4>
             
         </TableContainer>
         );

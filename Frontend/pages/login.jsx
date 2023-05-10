@@ -71,7 +71,8 @@ export default function Login()
             <h1 className={styles.centered}> Log In </h1>
 
             <Box
-                className={styles.centerBox}
+                // className={styles.centerBox}
+                style={{"margin-left":50}}
                 component="form"
                 sx={{
                     '& > :not(style)': { m: 1, width: '25ch' },
@@ -84,12 +85,13 @@ export default function Login()
                 <Button className={styles.centerBox} variant="outlined" color="secondary" onClick={handleCall}>
                     Sign in
                 </Button>
+                <Link style={{"margin-left":30}} href='/signup'>
+                No account yet?
+            </Link>
             </Box>
             <h4 className={styles.centered}>{resMsg}</h4>
             
-            <Link className={styles.centerBox} href='/signup'>
-                No account yet?
-            </Link>
+
             
             
         </Layout>
