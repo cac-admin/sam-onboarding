@@ -15,7 +15,7 @@ class UserProfile(models.Model):
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # each task is related to a user
     name = models.CharField(max_length=100)
-    length = models.IntegerField(max_length=24) # in hours
+    length = models.IntegerField() # in hours
 
     # these are allowed to be blank (until algorithm runs)
     start = models.DateTimeField(null=True) 

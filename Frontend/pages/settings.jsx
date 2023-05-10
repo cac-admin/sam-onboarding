@@ -30,7 +30,7 @@ export default function Settings()
         try {
             const body = JSON.stringify({preferred_start, preferred_end})
             console.log(body)
-            const res = await fetch("http://localhost:8000/update/", {
+            const res = await fetch("/update/", {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

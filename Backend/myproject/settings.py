@@ -32,12 +32,18 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
-SESSION_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SECURE = False
+# SESSION_COOKIE_HTTPONLY = False
+# SESSION_COOKIE_SECURE = False
+
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_WHITELIST = (
+#     'http://127.0.0.1:3000',
+# )
+
 
 # Application definition
 
@@ -51,7 +57,8 @@ INSTALLED_APPS = [
     # Added both of these below
     "rest_framework",
     "base",
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -62,6 +69,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "myproject.urls"
@@ -69,7 +77,7 @@ ROOT_URLCONF = "myproject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # "DIRS": [os.path.join(BASE_DIR, "build")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -124,6 +132,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# STATICFILES_DIRS = [
+#   # Tell Django where to look for React's static files (css, js)
+#   os.path.join(BASE_DIR, "build/static"),
+# ]
+
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

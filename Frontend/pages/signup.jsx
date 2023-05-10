@@ -41,7 +41,7 @@ export default function Signup()
         try {
             const body = JSON.stringify({username, password, preferred_start, preferred_end})
 
-            const res = await fetch("http://localhost:8000/register/", {
+            const res = await fetch("/register/", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
