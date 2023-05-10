@@ -21,3 +21,9 @@ https://github.com/SamEThibault/calendar-helper/blob/main/app/calendarAPI.py
 - Figure out algorithm bug (specifically, adding tasks in the event of events on Fridays)
 - System Test: test GC API to see if current app can access other account calendars
 - Set up GH Actions
+
+# Development
+- Use `npm run dev` and change Django settings.py `DEBUG` variable to `True`, change back to false before merging to main branch (deployment)
+- To spin up containers:
+Backend: `sudo docker build -t django-docker . && sudo docker run -d -p 8000:8000 django-docker`
+Same thing for frontend, but container's called nextjs-docker. Make sure to stop and remove existing/running containers before building from the image again to save space.
