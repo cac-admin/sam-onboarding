@@ -1,7 +1,7 @@
 
-module.exports = () => {
-  const rewrites = () => {
-    return [
+module.exports = {
+	async rewrites() { 
+	return [
       {
         source: "/schedule",
         destination: "http://127.0.0.1:8000/schedule/",
@@ -23,8 +23,7 @@ module.exports = () => {
         destination: "http://127.0.0.1:8000/confirm/",
       },
     ];
-  };
-  return {
-    rewrites,
-  };
+},
 };
+
+module.exports.output = 'standalone';
