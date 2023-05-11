@@ -3,8 +3,9 @@
 - Django (REST) + sqlite
 - Next JS
 - Material UI
-- GH Actions
 - CentOS / Docker / NGINX
+- Google Calendar API
+
 ## DECISION
 ### Task Scheduler:
 - Use the GC API to fetch week events (Django)
@@ -19,8 +20,7 @@ https://github.com/SamEThibault/calendar-helper/blob/main/app/calendarAPI.py
 
 # To Do:
 - Figure out algorithm bug (specifically, adding tasks in the event of events on Fridays)
-- System Test: test GC API to see if current app can access other account calendars
-- Set up GH Actions
+- Implement OAuth 2.0 for client calendar permissions
 
 # Development
 - Use `npm run dev` and change Django settings.py `DEBUG` variable to `True`, change back to false before merging to main branch (deployment)
